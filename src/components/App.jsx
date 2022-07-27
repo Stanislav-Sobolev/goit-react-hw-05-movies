@@ -1,3 +1,9 @@
+import { MovieDetails } from './MovieDetails';
+import { Trending } from './Trending';
+import { SearchMovies } from '../pages/SearchMovies';
+import { MovieCredits } from './MovieCredits';
+import { MovieReviews } from './MovieReviews';
+
 export const App = () => {
   return (
     <div
@@ -7,10 +13,14 @@ export const App = () => {
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: 40,
-        color: '#010101'
+        color: '#010101',
       }}
     >
-      React homework template
+      <Trending />
+      <MovieDetails />
+      <SearchMovies />
+      <MovieCredits />
+      <MovieReviews />
     </div>
   );
 };
