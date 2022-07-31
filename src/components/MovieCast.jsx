@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { fetchCast } from '../services/fetchCast';
 
 const MovieCast = () => {
   const [cast, setCast] = useState();
   const { id } = useParams();
 
   useEffect(() => {
-    fetchCast(id);
+    const fetch = async () => {
+      try {
+        const resultFetchCast = await fetchCast(id);
+
+        setCast(resultFetchCast.data.cast);
+      } catch (error) {
+        console.log('error :>> ', error);
+      }
+    };
+    fetch();
   }, [id]);
-
-  const fetchCast = async movieId => {
-    axios.defaults.baseURL = 'https://api.themoviedb.org/';
-    const myKey = 'a794a0e126a53200eb2bd9e3c7f541ab';
-
-    await axios
-      .get(`3/movie/${movieId}/credits?api_key=${myKey}&language=en-US`)
-      .then(res => setCast(res.data.cast))
-      .catch(error => new Error(error));
-  };
 
   return (
     <>

@@ -1,34 +1,37 @@
-import axios from 'axios';
 import { RenderMoviesList } from 'components/RenderMoviesList';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { fetchMovies } from '../services/fetchQuery';
 
 const SearchMovies = () => {
   const [foundMovies, setFoundMovies] = useState();
   const [searchParams, setSearchParams] = useSearchParams('');
-  const query = searchParams.get('search') ?? '';
+  const [query, setQuery] = useState('');
+  const search = searchParams.get('search') ?? '';
 
   useEffect(() => {
-    if (query !== '') {
-      fetchQuery();
+    if (!search) {
+      return;
     }
-  }, []);
 
-  const fetchQuery = async () => {
-    axios.defaults.baseURL = 'https://api.themoviedb.org/';
-    const myKey = 'a794a0e126a53200eb2bd9e3c7f541ab';
+    const fetchQuery = async () => {
+      try {
+        const movies = await fetchMovies(search);
 
-    await axios
-      .get(
-        `3/search/movie?api_key=${myKey}&language=en-US&page=1&include_adult=false&query=${query}`
-      )
-      .then(res => setFoundMovies(res.data.results))
-      .catch(error => new Error(error));
-  };
+        setFoundMovies(movies.data.results);
+      } catch (error) {
+        console.log('error :>> ', error);
+      }
+    };
+
+    fetchQuery();
+  }, [search]);
 
   const handleSubmit = e => {
     e.preventDefault();
-    fetchQuery();
+    const { value } = e.target.elements.query;
+
+    value ? setSearchParams({ search: value }) : setSearchParams({});
   };
 
   return (
@@ -38,11 +41,7 @@ const SearchMovies = () => {
           type="text"
           name="query"
           value={query}
-          onChange={e =>
-            e.target.value
-              ? setSearchParams({ search: e.target.value })
-              : setSearchParams({})
-          }
+          onChange={e => setQuery(e.target.value)}
         />
         <button type="submit">Search</button>
       </form>
